@@ -1,4 +1,4 @@
-package com.devteria.identity_service.dto.request;
+package com.devteria.identity_service.dto.response;
 
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -11,11 +11,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserCreationRequest {
-    @Size(min = 3, message = "USERNAME_INVALID")
+public class UserResponse {
     String username;
-
-    @Size(min = 8, message = "PASSWORD_INVALID")
     String password;
     String firstName;
     String lastName;
