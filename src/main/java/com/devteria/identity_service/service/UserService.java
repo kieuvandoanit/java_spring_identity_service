@@ -53,14 +53,7 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         log.info("In method getUsers");
-        List<User> users = userRepository.findAll();
-
-        List<UserResponse> userResponses = new ArrayList<>();
-        for (User user : users) {
-            userResponses.add(userMapper.toUserResponse(user));
-        }
-
-        return userResponses;
+        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
     @PostAuthorize("returnObject.username == authentication.name")
