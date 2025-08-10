@@ -12,7 +12,11 @@ import com.devteria.identity_service.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -45,7 +50,9 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
+        log.info("In method getUsers");
         List<User> users = userRepository.findAll();
 
         List<UserResponse> userResponses = new ArrayList<>();
@@ -56,6 +63,7 @@ public class UserService {
         return userResponses;
     }
 
+    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(String id) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("User with id " + id + " not found.")
@@ -75,5 +83,16 @@ public class UserService {
 
     public void deleteUser(String id) {
         userRepository.deleteById(id);
+    }
+
+    public UserResponse getMyInfo() {
+        var contextHolder = SecurityContextHolder.getContext();
+        String name = contextHolder.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(name).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        return userMapper.toUserResponse(user);
     }
 }

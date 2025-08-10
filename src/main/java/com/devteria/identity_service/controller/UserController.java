@@ -59,4 +59,9 @@ public class UserController {
 
         return "User has been deleted";
     }
+
+    @GetMapping("myInfo")
+    UserResponse getMyInfo() {
+        return userService.getMyInfo();
+    }
 }
