@@ -36,7 +36,7 @@ public class ApplicationInitConfig {
                         .firstName("Admin")
                         .lastName("User")
                         .dob(LocalDate.of(1990, 1, 1))
-                        .roles(roles)
+//                        .roles(roles)
                         .build();
 
                 userRepository.save(user);
